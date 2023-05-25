@@ -6,3 +6,6 @@ Accepted Environmental value
 | Key |  Default Value  |
 |:-----|:--------:|
 | APP_FLAVOR   |  Black  |
+| POD_NAME   |  None  |
+| NODE_NAME   |  None  |
+| POD_IP   |  None  |
