@@ -9,6 +9,7 @@ Accepted Environmental value
 | POD_NAME   |  None  |
 | NODE_NAME   |  None  |
 | POD_IP   |  None  |
+| API | None  |
 
 ---
 ### Build Docker image and push to Docker Hub
