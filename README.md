@@ -51,3 +51,15 @@ Docker push
 ```bash
 docker push vimalsmenon/app-backend:brown
 ```
+
+Bulk build and Push
+```bash
+docker build --build-arg DOCKER_TAG=green --tag vimalsmenon/app-backend:green .
+docker build --build-arg DOCKER_TAG=red --tag vimalsmenon/app-backend:red .
+docker build --build-arg DOCKER_TAG=brown --tag vimalsmenon/app-backend:brown .
+docker build --build-arg DOCKER_TAG=yellow --tag vimalsmenon/app-backend:yellow .
+docker push vimalsmenon/app-backend:green
+docker push vimalsmenon/app-backend:red
+docker push vimalsmenon/app-backend:brown
+docker push vimalsmenon/app-backend:yellow
+```

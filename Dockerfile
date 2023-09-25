@@ -1,5 +1,8 @@
 FROM node:18-slim
 
+ARG DOCKER_TAG
+ENV APP_FLAVOR=$DOCKER_TAG
+
 WORKDIR App
 
 COPY src src
