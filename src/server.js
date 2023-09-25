@@ -12,6 +12,7 @@ app.get("/", (req, res) => {
     nodeName: process.env.NODE_NAME,
     podName: process.env.POD_NAME,
     podIp: process.env.POD_IP,
+    namespace: process.env.NAMESPACE,
     date: d.toLocaleString()
   });
 });
