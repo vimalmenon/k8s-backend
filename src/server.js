@@ -7,13 +7,16 @@ const port = 4000;
 app.use(cors());
 app.get("/", (req, res) => {
   const d = new Date();
+  const { APP_FLAVOR, NODE_NAME, POD_NAME, POD_IP, NAMESPACE, ...props } =
+    process.env;
   res.json({
-    appFlavor: process.env.APP_FLAVOR || "black",
-    nodeName: process.env.NODE_NAME,
-    podName: process.env.POD_NAME,
-    podIp: process.env.POD_IP,
-    namespace: process.env.NAMESPACE,
-    date: d.toLocaleString()
+    appFlavor: APP_FLAVOR || "black",
+    nodeName: NODE_NAME,
+    podName: POD_NAME,
+    podIp: POD_IP,
+    namespace: NAMESPACE,
+    date: d.toLocaleString(),
+    ...props,
   });
 });
 
