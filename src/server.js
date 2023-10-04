@@ -37,19 +37,28 @@ app.get("/crash", (req, res) => {
 });
 
 app.get("/pods", async (req, res) => {
-  const response = await fetch(
-    "https://192.168.64.76:8443/api/v1/namespaces/local/pods",
-    {
-      headers: {
-        Authorization:
-          "Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IlloMW1PUXpRenY3NjRObGF2U2U2S0ZQRXhPdWRsSU5LT1dvOHRhQV81TU0ifQ.eyJhdWQiOlsiaHR0cHM6Ly9rdWJlcm5ldGVzLmRlZmF1bHQuc3ZjLmNsdXN0ZXIubG9jYWwiXSwiZXhwIjoxNjk2MzMyOTM3LCJpYXQiOjE2OTYzMjkzMzcsImlzcyI6Imh0dHBzOi8va3ViZXJuZXRlcy5kZWZhdWx0LnN2Yy5jbHVzdGVyLmxvY2FsIiwia3ViZXJuZXRlcy5pbyI6eyJuYW1lc3BhY2UiOiJsb2NhbCIsInNlcnZpY2VhY2NvdW50Ijp7Im5hbWUiOiJsb2NhbC1zZXJ2aWNlLWFjY291bnQiLCJ1aWQiOiI2OGM1NDE3OC0wZWZjLTRiYWMtOGI2Ny04YjY0YWU5OGM1ZWQifX0sIm5iZiI6MTY5NjMyOTMzNywic3ViIjoic3lzdGVtOnNlcnZpY2VhY2NvdW50OmxvY2FsOmxvY2FsLXNlcnZpY2UtYWNjb3VudCJ9.AYDA5LW502cQyMHZX8hZGv3Sa6flOD8IsJRthvC5rBkY6sLl4Yf_q-LdcB1x-tMrsT6Mu46rey2mSPCfsNxYWBJGmUskj8ZGNVsgtqAgokQVQgAyT9YwuYWNv2DkQodOvfQHdqcA1OpGuip2POG7mBBmdXxNxjVn-cZo9VhLO3SKgqxhYnWhnmdWfrEZpw51TqGuqyhekuqNDDLDWzvLJEzsLDwkc9SE5w04WlvXpr4qSEhemDjXEH0GKXrtWpH2atlTSBnUEQBSNrvm6xseFYvgIXxj-Tu3oUZPHqW6kq-DYoP7Z2ONarfcspOxerwl7hWahLqlXfsMTXWRQHE3fQ",
-      },
-    }
-  );
-  const json = await response.json();
-  res.json({
-    ...json,
-  });
+  const { API_KEY } = process.env;
+  try {
+    const response = await fetch(
+      `https://kubernetes.default.svc/api/v1/namespaces/local/pods`,
+      {
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+        },
+      }
+    );
+    const json = await response.json();
+    res.json({
+      kubernetes: process.env.kubernetes,
+      ...json,
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({
+      kubernetes: process.env.kubernetes,
+      status: "error",
+    });
+  }
 });
 
 const getLogsText = (api) => {
