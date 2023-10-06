@@ -9,7 +9,6 @@ const port = 4000;
 
 app.use(cors());
 app.get("/", (req, res) => {
-  fs.appendFileSync("/logs/pod.txt", getLogsText("/"));
   const d = new Date();
   const { APP_FLAVOR, NODE_NAME, POD_NAME, POD_IP, NAMESPACE, ...props } =
     process.env;
@@ -25,51 +24,28 @@ app.get("/", (req, res) => {
 });
 
 app.get("/health", (req, res) => {
-  fs.appendFileSync("/logs/pod.txt", getLogsText("/health"));
+  const { APP_FLAVOR } = process.env;
+  const d = new Date();
   res.json({
+    appFlavor: APP_FLAVOR || "black",
+    date: d.toLocaleString(),
     result: "success",
   });
 });
 
-app.get("/crash", (req, res) => {
-  fs.appendFileSync("/logs/pod.txt", getLogsText("/crash"));
-  process.exit(1);
-});
-
-app.get("/pods", async (req, res) => {
-  const { API_KEY } = process.env;
-  try {
-    const response = await fetch(
-      `https://kubernetes.default.svc/api/v1/namespaces/local/pods`,
-      {
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-        },
-      }
-    );
-    const json = await response.json();
-    res.json({
-      kubernetes: process.env.kubernetes,
-      ...json,
-    });
-  } catch (error) {
-    console.log(error);
-    res.json({
-      kubernetes: process.env.kubernetes,
-      status: "error",
-    });
+app.get("/stress", (req, res) => {
+  const { APP_FLAVOR } = process.env;
+  const d = new Date();
+  for (let i = 0; i < 7000000; i++) {
+    console.log(`Printing index ${i} from pod ${APP_FLAVOR} \n`)
   }
+  res.json({
+    appFlavor: APP_FLAVOR || "black",
+    date: d.toLocaleString(),
+    result: "success",
+  });
 });
 
-const getLogsText = (api) => {
-  return `${getTimeStamp()} : API "${api}" is called \n`;
-};
-
-const getTimeStamp = () => {
-  return new Date().toISOString();
-};
-setTimeout(() => {
-  app.listen(port, () => {
-    console.log(`App listening on port ${port}`);
-  });
-}, process.env.APP_DELAY || 0);
+app.listen(port, () => {
+  console.log(`App listening on port ${port}`);
+});
