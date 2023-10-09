@@ -10,16 +10,21 @@ const port = 4000;
 app.use(cors());
 app.get("/", (req, res) => {
   const d = new Date();
-  const { APP_FLAVOR, NODE_NAME, POD_NAME, POD_IP, NAMESPACE, ...props } =
-    process.env;
+  const {
+    APP_FLAVOR,
+    NODE_NAME,
+    POD_NAME,
+    POD_IP,
+    NAMESPACE,
+    NODE_IP,
+    ...props
+  } = process.env;
   res.json({
     appFlavor: APP_FLAVOR || "black",
-    nodeName: NODE_NAME,
-    podName: POD_NAME,
     podIp: POD_IP,
     namespace: NAMESPACE,
     date: d.toLocaleString(),
-    ...props,
+    props,
   });
 });
 
@@ -33,17 +38,26 @@ app.get("/health", (req, res) => {
   });
 });
 
-app.get("/stress", (req, res) => {
-  const { APP_FLAVOR } = process.env;
-  const d = new Date();
-  for (let i = 0; i < 7000000; i++) {
-    console.log(`Printing index ${i} from pod ${APP_FLAVOR} \n`)
+app.get("/make-call/:api_endpoint", async (req, res) => {
+  try {
+    console.log(req.params);
+    const { APP_FLAVOR, POD_IP } = process.env;
+    const { api_endpoint } = req.params;
+    const d = new Date();
+    const response = await (await fetch(`http://${api_endpoint}/`)).json();
+    res.json({
+      response,
+      appFlavor: APP_FLAVOR || "black",
+      date: d.toLocaleString(),
+      result: "success",
+      podIp: POD_IP,
+    });
+  } catch (error) {
+    res.json({
+      error,
+      result: "failure",
+    });
   }
-  res.json({
-    appFlavor: APP_FLAVOR || "black",
-    date: d.toLocaleString(),
-    result: "success",
-  });
 });
 
 app.listen(port, () => {
