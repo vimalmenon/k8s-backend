@@ -10,50 +10,43 @@ const port = 4000;
 app.use(cors());
 app.get("/", (req, res) => {
   const d = new Date();
-  const {
-    APP_FLAVOR,
-    NODE_NAME,
-    POD_NAME,
-    POD_IP,
-    NAMESPACE,
-    NODE_IP,
-    ...props
-  } = process.env;
+  const { POD_IP, APP_NAME, APP_API } = process.env;
   res.json({
-    appFlavor: APP_FLAVOR || "black",
-    podIp: POD_IP,
-    namespace: NAMESPACE,
+    APP_NAME,
+    POD_IP,
+    APP_API,
     date: d.toLocaleString(),
-    props,
   });
 });
 
 app.get("/health", (req, res) => {
-  const { APP_FLAVOR } = process.env;
+  const { APP_NAME } = process.env;
   const d = new Date();
   res.json({
-    appFlavor: APP_FLAVOR || "black",
+    APP_NAME,
     date: d.toLocaleString(),
     result: "success",
   });
 });
 
-app.get("/make-call/:api_endpoint", async (req, res) => {
+app.get("/make-call", async (req, res) => {
+  const { POD_IP, APP_NAME, APP_API } = process.env;
   try {
-    console.log(req.params);
-    const { APP_FLAVOR, POD_IP } = process.env;
-    const { api_endpoint } = req.params;
     const d = new Date();
-    const response = await (await fetch(`http://${api_endpoint}/`)).json();
+    console.log(APP_API, POD_IP);
+    const response = await (await fetch(`http://${APP_API}:4000/`)).json();
     res.json({
       response,
-      appFlavor: APP_FLAVOR || "black",
+      POD_IP,
+      APP_NAME,
+      APP_API,
       date: d.toLocaleString(),
       result: "success",
-      podIp: POD_IP,
     });
   } catch (error) {
     res.json({
+      POD_IP,
+      APP_NAME,
       error,
       result: "failure",
     });
